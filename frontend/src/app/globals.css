@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--color-slate-50);
+  --color-foreground: var(--color-slate-950);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-slate-950);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-slate-950);
+  --color-primary: var(--color-violet-600);
+  --color-primary-foreground: var(--color-white);
+  --color-secondary: var(--color-indigo-50);
+  --color-secondary-foreground: var(--color-indigo-700);
+  --color-muted: var(--color-slate-100);
+  --color-muted-foreground: var(--color-slate-500);
+  --color-accent: var(--color-indigo-50);
+  --color-accent-foreground: var(--color-indigo-700);
+  --color-destructive: var(--color-red-600);
+  --color-destructive-foreground: var(--color-white);
+  --color-border: var(--color-slate-200);
+  --color-input: var(--color-slate-200);
+  --color-ring: var(--color-violet-600);
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-image: radial-gradient(at 0% 0%, hsla(262, 83%, 58%, 0.03) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(221, 83%, 53%, 0.03) 0px, transparent 50%);
+  }
+}
+
+@utility glass {
+  @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-sm shadow-indigo-100/20;
+}
+
+@utility gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-600;
+}
