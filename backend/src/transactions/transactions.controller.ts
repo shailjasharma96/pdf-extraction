@@ -1,6 +1,6 @@
 import { Controller, Post, UseInterceptors, UploadedFile, Get, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { TransactionsService } from './transactions.service';
+import { TransactionsService } from './service';
 
 @Controller('transactions')
 export class TransactionsController {
