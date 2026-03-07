@@ -1,19 +1,42 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Get, Query } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { TransactionsService } from './service';
+import {
+  Controller,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+  Get,
+  Query,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { TransactionService } from "./service";
 
-@Controller('transactions')
-export class TransactionsController {
-  constructor(private readonly transactionsService: TransactionsService) {}
+@Controller("transactions")
+export class TransactionController {
+  constructor(private readonly transactionService: TransactionService) {}
 
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return this.transactionsService.processPdf(file.buffer);
+  @Post("upload")
+  @UseInterceptors(FileInterceptor("pdf"))
+  async upload(@UploadedFile() file: Express.Multer.File) {
+    return this.transactionService.processPDF(file);
   }
 
   @Get()
-  async findAll(@Query('search') search?: string) {
-    return this.transactionsService.findAll(search);
+  async getTransactions(
+    @Query("buyerName") buyerName?: string,
+    @Query("sellerName") sellerName?: string,
+    @Query("houseNumber") houseNumber?: string,
+    @Query("documentNumber") documentNumber?: string,
+    @Query("surveyNumbers") surveyNumbers?: string,
+    @Query("village") village?: string,
+    @Query("partyName") partyName?: string
+  ) {
+    return this.transactionService.getTransactions({
+      buyerName,
+      sellerName,
+      houseNumber,
+      documentNumber,
+      surveyNumbers,
+      village,
+      partyName,
+    });
   }
 }

@@ -1,9 +1,9 @@
-import { Global, Module } from '@nestjs/common';
-import { DatabaseService } from './database.service';
+import "dotenv/config";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
-@Global()
-@Module({
-  providers: [DatabaseService],
-  exports: [DatabaseService],
-})
-export class DatabaseModule {}
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export const db = drizzle(pool);
