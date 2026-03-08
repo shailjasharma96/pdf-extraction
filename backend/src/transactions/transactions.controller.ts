@@ -27,7 +27,8 @@ export class TransactionController {
     @Query("documentNumber") documentNumber?: string,
     @Query("surveyNumbers") surveyNumbers?: string,
     @Query("village") village?: string,
-    @Query("partyName") partyName?: string
+    @Query("partyName") partyName?: string,
+    @Query("limit") limit?: string
   ) {
     return this.transactionService.getTransactions({
       buyerName,
@@ -37,6 +38,7 @@ export class TransactionController {
       surveyNumbers,
       village,
       partyName,
+      limit: limit ? parseInt(limit, 10) : undefined
     });
   }
 }

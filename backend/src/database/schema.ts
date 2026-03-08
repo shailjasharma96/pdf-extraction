@@ -2,8 +2,6 @@ import {
   pgTable,
   serial,
   text,
-  integer,
-  date,
   timestamp,
 } from "drizzle-orm/pg-core";
 
@@ -16,12 +14,16 @@ export const transactions = pgTable("transactions", {
   surveyNumbers: text("survey_numbers"),
   houseNumber: text("house_number"),
   propertyType: text("property_type"),
+  propertyTypeTamil: text("property_type_tamil"),
   village: text("village"),
+  villageTamil: text("village_tamil"),
   recordedTransaction: text("recorded_transaction"),
+  recordedTransactionTamil: text("recorded_transaction_tamil"),
   documentNumber: text("document_number"),
   registeredDate: text("registered_date"),
   buyerName: text("buyer_name"),
   sellerName: text("seller_name"),
   partyName: text("party_name"),
+  partyNameTamil: text("party_name_tamil"),
   createdAt: timestamp("created_at").defaultNow(),
 });

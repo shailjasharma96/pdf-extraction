@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { db } from "../database/drizzle";
 import { transactions } from "../database/schema";
-import { ilike, and } from "drizzle-orm";
+import { ilike, and, desc } from "drizzle-orm";
 import { parsePDF } from "./parser";
 import { translateTamilText } from "./translator";
 
@@ -13,18 +13,25 @@ export class TransactionService {
       const parsed = await parsePDF(file.buffer);
       console.log("Parsed PDF content:", parsed);
 
-      const translated = await Promise.all(
+      const dataToInsert = await Promise.all(
         parsed.map(async (item) => ({
           ...item,
+          // Store original Tamil text
+          partyNameTamil: item.partyName,
+          villageTamil: item.village,
+          recordedTransactionTamil: item.recordedTransaction,
+          propertyTypeTamil: item.propertyType,
+          
+          // Store translated English text
           partyName: await translateTamilText(item.partyName),
           village: await translateTamilText(item.village),
           recordedTransaction: await translateTamilText(item.recordedTransaction),
           propertyType: await translateTamilText(item.propertyType),
         }))
       );
-      console.log("Translated content:", translated);
+      console.log("Processed content (Tamil + English):", dataToInsert);
 
-      const inserted = await db.insert(transactions).values(translated).returning();
+      const inserted = await db.insert(transactions).values(dataToInsert).returning();
       console.log("Inserted into DB:", inserted);
       return inserted;
     } catch (err) {
@@ -41,6 +48,7 @@ export class TransactionService {
     documentNumber?: string;
     partyName?: string;
     village?: string;
+    limit?: number;
   }) {
     const conditions = [];
 
@@ -72,9 +80,16 @@ export class TransactionService {
       conditions.push(ilike(transactions.village, `%${filters.village}%`));
     }
 
-    return db
+    const query = db
       .select()
       .from(transactions)
-      .where(conditions.length ? and(...conditions) : undefined);
+      .where(conditions.length ? and(...conditions) : undefined)
+      .orderBy(desc(transactions.id));
+
+    if (filters.limit) {
+      return (query as any).limit(filters.limit);
+    }
+
+    return query;
   }
 }
