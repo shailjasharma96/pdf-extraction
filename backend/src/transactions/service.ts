@@ -2,15 +2,17 @@ import { Injectable } from "@nestjs/common";
 import { db } from "../database/drizzle";
 import { transactions } from "../database/schema";
 import { ilike, and, desc } from "drizzle-orm";
-import { parsePDF } from "./parser";
+import { PdfParserService } from "./parser";
 import { translateTamilText } from "./translator";
 
 @Injectable()
 export class TransactionService {
+  constructor(private readonly pdfParserService: PdfParserService) { }
+
   async processPDF(file: Express.Multer.File) {
     console.log("Received file for processing:", file.originalname);
     try {
-      const parsed = await parsePDF(file.buffer);
+      const parsed = await this.pdfParserService.processDocument(file.buffer);
       console.log("Parsed PDF content:", parsed);
 
       const dataToInsert = await Promise.all(
@@ -21,12 +23,24 @@ export class TransactionService {
           villageTamil: item.village,
           recordedTransactionTamil: item.recordedTransaction,
           propertyTypeTamil: item.propertyType,
-          
+          landExtentTamil: item.landExtent,
+          considerationValueTamil: item.considerationValue,
+          marketValueTamil: item.marketValue,
+          fullTextTamil: item.fullText,
+
           // Store translated English text
           partyName: await translateTamilText(item.partyName),
           village: await translateTamilText(item.village),
           recordedTransaction: await translateTamilText(item.recordedTransaction),
           propertyType: await translateTamilText(item.propertyType),
+          landExtent: await translateTamilText(item.landExtent),
+          considerationValue: await translateTamilText(item.considerationValue),
+          marketValue: await translateTamilText(item.marketValue),
+          fullText: await translateTamilText(item.fullText),
+
+          // Meta fields (Dates/Numbers)
+          executionDate: item.executionDate,
+          entryCount: item.entryCount,
         }))
       );
       console.log("Processed content (Tamil + English):", dataToInsert);

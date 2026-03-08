@@ -4,12 +4,14 @@ export async function translateTamilText(text?: string): Promise<string | undefi
   if (!text) return text;
 
   try {
-    const result = await translate(text, { 
-    from: "ta", 
-    to: "en" 
-});
+    const result = await translate(text, {
+      from: "ta",
+      to: "en",
+    });
+
     return result.text;
-  } catch {
+  } catch (error) {
+    console.error("Translation error:", error);
     return text;
   }
 }
