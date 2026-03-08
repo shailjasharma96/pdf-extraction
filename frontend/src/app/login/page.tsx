@@ -13,11 +13,15 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email === "admin@test.com" && password === "123456") {
+    
+    const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL || "admin@test.com";
+    const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD || "123456";
+
+    if (email === demoEmail && password === demoPassword) {
       localStorage.setItem("isLoggedIn", "true");
       router.push("/dashboard");
     } else {
-      alert("Invalid credentials. Use the demo account.");
+      alert("Invalid credentials. Please use the demo account.");
     }
   };
 
