@@ -67,6 +67,39 @@ export default function DashboardPage() {
     } else {
       fetchInitialData();
     }
+
+    // --- Inactivity Logout Logic ---
+    let idleTimer: NodeJS.Timeout;
+    const INACTIVITY_LIMIT = 15 * 60 * 1000; // 15 Minutes
+
+    const resetTimer = () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(logout, INACTIVITY_LIMIT);
+    };
+
+    const logout = () => {
+      localStorage.removeItem("isLoggedIn");
+      window.location.href = "/login";
+    };
+
+    // Events that indicate user activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    
+    // Add event listeners
+    events.forEach(event => {
+      document.addEventListener(event, resetTimer);
+    });
+
+    // Initial timer start
+    resetTimer();
+
+    // Cleanup on unmount
+    return () => {
+      if (idleTimer) clearTimeout(idleTimer);
+      events.forEach(event => {
+        document.removeEventListener(event, resetTimer);
+      });
+    };
   }, []);
 
   const fetchInitialData = async () => {
@@ -163,14 +196,14 @@ export default function DashboardPage() {
               <LayoutDashboard size={20} />
             </div>
             <div>
-              <h1 className="text-base font-bold text-slate-900 leading-tight">Extraction Engine</h1>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Master Dashboard</p>
+              <h1 className="text-lg font-black text-slate-900 leading-tight">Extraction Engine</h1>
+              <p className="text-xs font-black text-slate-400 tracking-[0.2em]">Master Dashboard</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
             <button
-              className="flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-500 hover:text-red-600 transition-all rounded-[8px] hover:bg-red-50"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-black text-slate-500 hover:text-red-600 transition-all rounded-[8px] hover:bg-red-50"
               onClick={() => {
                 localStorage.removeItem("isLoggedIn");
                 window.location.href = "/login";
@@ -196,50 +229,15 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Action & Stats Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-          <div className="md:col-span-8 flex flex-col sm:flex-row gap-4">
-            <div className="flex-1 glass-card p-4 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
-                <Database size={20} />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Extractions</p>
-                <h3 className="text-2xl font-black text-slate-900">{rows.length}</h3>
-              </div>
-            </div>
-
-            <div className="flex-[1.5] glass-card p-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${loading ? 'bg-amber-50 text-amber-600 border-amber-100 animate-pulse' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}`}>
-                  {loading ? <Loader2 size={20} className="animate-spin" /> : <CheckCircle2 size={20} />}
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Engine Status</p>
-                  <h3 className="text-sm font-bold text-slate-800">{loading ? 'Processing...' : 'Operational'}</h3>
-                </div>
-              </div>
-              
-              <button
-                className="premium-button !py-2 !px-4 text-[11px] font-black h-10 shadow-indigo-100/50"
-                onClick={() => setIsUploadModalOpen(true)}
-              >
-                <div className="flex items-center gap-2">
-                  <Upload size={14} />
-                  <span>UPLOAD PDF</span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <div className="md:col-span-4 flex items-center">
-             <div className="w-full glass-card p-4 bg-slate-100/50 border-slate-200/60 flex items-center justify-center gap-4 text-center">
-                <div className="flex flex-col items-center">
-                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.25em]">Session Continuity</p>
-                   <p className="text-[9px] font-medium text-slate-400 mt-1 italic">Drizzle ORM + PG Active</p>
-                </div>
-             </div>
-          </div>
+        {/* Action & Upload Section */}
+        <div className="flex justify-end">
+          <button
+            className="premium-button !py-2 !px-6 text-xs font-black h-11 shadow-indigo-100/50 flex items-center gap-2"
+            onClick={() => setIsUploadModalOpen(true)}
+          >
+            <Upload size={14} />
+            <span>Upload PDF</span>
+          </button>
         </div>
 
         {/* Main Interface */}
@@ -247,15 +245,15 @@ export default function DashboardPage() {
           {/* Results Table Section */}
           <div className="flex-1 w-full xl:min-w-0 bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col">
             <div className="px-6 py-4 bg-slate-50 border-b border-slate-200/60 flex flex-col lg:flex-row lg:items-center justify-between gap-4 shrink-0">
-              <h2 className="text-xs font-black text-slate-800 flex items-center gap-2.5 uppercase tracking-widest">
+              <h2 className="text-sm font-black text-slate-800 flex items-center gap-2.5 tracking-widest">
                 <FileSearch size={14} className="text-indigo-600" />
-                EXTRACTED INTELLIGENCE
+                Extraction Results
               </h2>
 
               <div className="flex flex-col sm:flex-row items-center gap-3 flex-1 lg:justify-end max-w-2xl text-[10px]">
                 <div className="relative w-full sm:w-[160px]">
                   <select
-                    className={`w-full h-11 pl-10 pr-4 text-[11px] font-bold bg-white border border-slate-200 rounded-[8px] appearance-none cursor-pointer focus:ring-4 focus:ring-indigo-500/10 transition-all ${!activeFilter ? 'text-slate-300' : 'text-slate-900'}`}
+                    className={`w-full h-11 pl-10 pr-4 text-xs font-bold bg-white border border-slate-200 rounded-[8px] appearance-none cursor-pointer focus:ring-4 focus:ring-indigo-500/10 transition-all ${!activeFilter ? 'text-slate-300' : 'text-slate-900'}`}
                     value={activeFilter}
                     onChange={(e) => setActiveFilter(e.target.value)}
                   >
@@ -271,7 +269,7 @@ export default function DashboardPage() {
 
                 <div className="relative w-full sm:w-[160px]">
                   <input
-                    className="w-full h-11 pl-12 pr-4 bg-white border border-slate-200 rounded-[8px] text-[11px] font-bold tracking-tight text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full h-11 pl-10 pr-4 bg-white border border-slate-200 rounded-[8px] text-xs font-bold tracking-tight text-slate-700 placeholder:text-slate-300 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
                     placeholder="Enter text"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
@@ -281,31 +279,33 @@ export default function DashboardPage() {
                 </div>
 
                 <button
-                  className="h-11 px-8 bg-slate-900 text-white rounded-[8px] font-black uppercase tracking-[0.2em] hover:bg-black hover:shadow-xl hover:shadow-black/10 transition-all active:scale-95 disabled:opacity-50"
+                  className="premium-button !py-2 !px-8 text-xs font-black h-11 shadow-indigo-100/50 flex items-center justify-center"
                   onClick={search}
                   disabled={searchLoading}
                 >
-                  {searchLoading ? <Loader2 size={14} className="animate-spin" /> : "SEARCH"}
+                  {searchLoading ? <Loader2 size={14} className="animate-spin" /> : "Search"}
                 </button>
               </div>
             </div>
 
             <div className="flex-1 overflow-auto overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-              <table className="w-full min-w-[1200px] border-separate border-spacing-0">
+              <table className="w-full min-w-[1600px] border-separate border-spacing-0">
                 <thead className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur-sm">
                   <tr>
                     {[
-                      "Document Signature", 
-                      "Dept Authority", 
-                      "Timeframe", 
-                      "Reg Office", 
-                      "Land Property", 
-                      "Locality", 
-                      "Action Type", 
-                      "Ref ID", 
-                      "Parties Involved"
+                      "Document Type", 
+                      "Department", 
+                      "Search Period", 
+                      "Sub-Registrar Office", 
+                      "Survey Numbers", 
+                      "Property Type", 
+                      "Village", 
+                      "Recorded Transaction", 
+                      "Document Number", 
+                      "Registered Date",
+                      "Party Name"
                     ].map((title) => (
-                      <th key={title} className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-[0.15em] text-left border-b border-slate-200/60">
+                      <th key={title} className="px-6 py-4 text-[10px] font-black text-slate-400 tracking-[0.15em] text-left border-b border-slate-200/60">
                         {title}
                       </th>
                     ))}
@@ -323,12 +323,12 @@ export default function DashboardPage() {
                         <td className="px-6 py-5">
                           <div className="flex flex-col">
                             <span className="text-xs font-bold text-slate-900 leading-tight">{row.documentType || "Standard EC"}</span>
-                            <span className="text-[9px] font-medium text-slate-400 mt-0.5">VERIFIED RECORD</span>
+                            <span className="text-[9px] font-medium text-slate-400 mt-0.5">VERIFIED</span>
                           </div>
                         </td>
                         <td className="px-6 py-5">
                           <p className="text-[10px] font-bold text-slate-500 leading-tight max-w-[140px] truncate uppercase tracking-tighter">
-                            {row.department || "TAMIL NADU REGISTRATION"}
+                            {row.department || "Tamil Nadu Registration"}
                           </p>
                         </td>
                         <td className="px-6 py-5 font-mono text-[10px] text-indigo-500 font-black whitespace-nowrap">
@@ -337,19 +337,19 @@ export default function DashboardPage() {
                         <td className="px-6 py-5">
                            <div className="flex flex-col">
                               <span className="text-[11px] font-bold text-slate-600 truncate max-w-[120px]">{row.subRegistrarOffice || "—"}</span>
-                              <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">SRO_HUB</span>
+                              <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter truncate">SRO_HUB</span>
                            </div>
                         </td>
+                        <td className="px-6 py-5 font-mono text-[11px] font-black text-indigo-600 tracking-tighter">
+                          {row.surveyNumbers || "—"}
+                        </td>
                         <td className="px-6 py-5">
-                          <div className="flex flex-col">
-                            <span className="text-[11px] font-black text-indigo-600 font-mono tracking-tighter leading-none">{row.surveyNumbers || "—"}</span>
-                            <div className="flex items-center gap-1.5 mt-1">
-                               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{row.propertyType || "N/A"}</span>
-                               {row.propertyTypeTamil && (
-                                 <span className="text-[10px] text-slate-300 font-tamil leading-none">{row.propertyTypeTamil}</span>
-                               )}
-                            </div>
-                          </div>
+                           <div className="flex flex-col">
+                              <span className="text-[11px] font-bold text-slate-600">{row.propertyType || "—"}</span>
+                              {row.propertyTypeTamil && (
+                                <span className="text-[10px] text-slate-400 font-tamil mt-0.5">{row.propertyTypeTamil}</span>
+                              )}
+                           </div>
                         </td>
                         <td className="px-6 py-5">
                            <div className="flex flex-col">
@@ -362,12 +362,12 @@ export default function DashboardPage() {
                         <td className="px-6 py-5">
                           <div className="flex flex-col gap-1.5">
                              <div className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[9px] font-black border border-emerald-100 uppercase tracking-widest whitespace-nowrap w-fit">
-                               {row.recordedTransaction?.split(' ')[0] || "ACTION"}
+                               {row.recordedTransaction || "ACTION"}
                              </div>
                              {row.sourcePdfUrl && (
                                 <div className="flex items-center gap-1 text-[8px] font-black text-indigo-400 tracking-widest">
                                    <div className="w-1 h-1 rounded-full bg-indigo-400" />
-                                   SOURCE_LINKED
+                                   LINKED
                                 </div>
                              )}
                           </div>
@@ -375,9 +375,12 @@ export default function DashboardPage() {
                         <td className="px-6 py-5 font-mono text-[11px] font-black text-slate-400 tracking-tighter">
                           {row.documentNumber || "—"}
                         </td>
+                        <td className="px-6 py-5 font-mono text-[10px] font-bold text-slate-600">
+                          {row.registeredDate || "—"}
+                        </td>
                         <td className="px-6 py-5">
                            <div className="flex flex-col">
-                              <p className="text-[11px] font-black text-slate-800 tracking-tight leading-tight max-w-[180px] truncate uppercase">{row.partyName || "—"}</p>
+                              <p className="text-[11px] font-medium text-slate-600 tracking-tight leading-tight max-w-[180px] truncate uppercase">{row.partyName || "—"}</p>
                               {row.partyNameTamil && (
                                 <p className="text-[10px] text-slate-400 font-tamil mt-0.5 truncate max-w-[180px]">{row.partyNameTamil}</p>
                               )}
@@ -387,7 +390,7 @@ export default function DashboardPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={9} className="px-8 py-32 text-center">
+                      <td colSpan={11} className="px-8 py-32 text-center">
                         <div className="flex flex-col items-center gap-2 opacity-40">
                           <Database size={40} className="text-slate-300" />
                           <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">No Active Intelligence Detected</p>
@@ -408,8 +411,8 @@ export default function DashboardPage() {
                    <div className="absolute top-0 left-0 right-0 p-4 z-10 bg-gradient-to-b from-black/80 to-transparent flex items-center justify-between">
                       <div className="flex items-center gap-2">
                          <div className={`w-2 h-2 rounded-full ${selectedRow?.sourcePdfUrl || pdfUrl ? 'bg-indigo-500 animate-pulse' : 'bg-slate-600'}`} />
-                         <span className="text-[9px] font-black text-white/90 uppercase tracking-[0.2em]">
-                           {selectedRow ? "Preview Doc" : "Live Source Intelligence"}
+                         <span className="text-xs font-black text-white/90 tracking-[0.2em]">
+                           Preview PDF
                          </span>
                       </div>
                       {(selectedRow?.sourcePdfUrl || pdfUrl) && (
@@ -417,7 +420,7 @@ export default function DashboardPage() {
                             {selectedRow && (
                               <button 
                                 onClick={() => setSelectedRow(null)}
-                                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[9px] font-black rounded-[8px] border border-white/10 uppercase tracking-widest transition-all"
+                                className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-[9px] font-black rounded-[8px] border border-white/10 tracking-widest transition-all"
                               >
                                 Reset
                               </button>
