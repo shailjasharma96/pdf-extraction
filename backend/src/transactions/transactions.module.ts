@@ -8,4 +8,4 @@ import { PdfParserService } from "./parser";
   controllers: [TransactionController],
   providers: [TransactionService, OcrService, PdfParserService],
 })
-export class TransactionsModule {}
+export class TransactionsModule { }

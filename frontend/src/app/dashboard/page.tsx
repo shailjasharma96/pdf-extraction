@@ -30,6 +30,8 @@ type Transaction = {
   recordedTransaction?: string;
   documentNumber?: string;
   registeredDate?: string;
+  executionDate?: string;
+  landExtent?: string;
   partyName?: string;
   partyNameTamil?: string;
   houseNumber?: string;
@@ -37,6 +39,9 @@ type Transaction = {
   villageTamil?: string;
   propertyTypeTamil?: string;
   recordedTransactionTamil?: string;
+  landExtentTamil?: string;
+  fullText?: string;
+  fullTextTamil?: string;
 };
 
 export default function DashboardPage() {
@@ -59,6 +64,7 @@ export default function DashboardPage() {
   const [searchValue, setSearchValue] = useState("");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Transaction | null>(null);
+  const [previewMode, setPreviewMode] = useState<"pdf" | "translated" | "tamil">("pdf");
 
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn");
@@ -301,8 +307,9 @@ export default function DashboardPage() {
                       "Property Type", 
                       "Village", 
                       "Recorded Transaction", 
+                      "Land Extent",
                       "Document Number", 
-                      "Registered Date",
+                      "Reg/Exec Dates",
                       "Party Name"
                     ].map((title) => (
                       <th key={title} className="px-6 py-4 text-[10px] font-black text-slate-400 tracking-[0.15em] text-left border-b border-slate-200/60">
@@ -372,11 +379,22 @@ export default function DashboardPage() {
                              )}
                           </div>
                         </td>
+                        <td className="px-6 py-5">
+                           <div className="flex flex-col">
+                              <span className="text-[11px] font-bold text-slate-600">{row.landExtent || "—"}</span>
+                              {row.landExtentTamil && (
+                                <span className="text-[10px] text-slate-400 font-tamil mt-0.5">{row.landExtentTamil}</span>
+                              )}
+                           </div>
+                        </td>
                         <td className="px-6 py-5 font-mono text-[11px] font-black text-slate-400 tracking-tighter">
                           {row.documentNumber || "—"}
                         </td>
                         <td className="px-6 py-5 font-mono text-[10px] font-bold text-slate-600">
-                          {row.registeredDate || "—"}
+                          <div className="flex flex-col">
+                             <span className="text-indigo-600">R: {row.registeredDate || "—"}</span>
+                             <span className="text-slate-400">E: {row.executionDate || "—"}</span>
+                          </div>
                         </td>
                         <td className="px-6 py-5">
                            <div className="flex flex-col">
@@ -412,9 +430,32 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2">
                          <div className={`w-2 h-2 rounded-full ${selectedRow?.sourcePdfUrl || pdfUrl ? 'bg-indigo-500 animate-pulse' : 'bg-slate-600'}`} />
                          <span className="text-xs font-black text-white/90 tracking-[0.2em]">
-                           Preview PDF
+                           {previewMode === "pdf" ? "Preview PDF" : previewMode === "translated" ? "English Matrix" : "Tamil Raw Source"}
                          </span>
                       </div>
+                      
+                      {/* View Mode Toggles */}
+                      <div className="flex items-center gap-1 bg-white/10 p-1 rounded-xl backdrop-blur-md">
+                         <button 
+                             onClick={() => setPreviewMode("pdf")}
+                             className={`px-3 py-1 text-[9px] font-black tracking-widest rounded-lg transition-all ${previewMode === "pdf" ? "bg-indigo-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+                         >
+                            PDF
+                         </button>
+                         <button 
+                             onClick={() => setPreviewMode("translated")}
+                             className={`px-3 py-1 text-[9px] font-black tracking-widest rounded-lg transition-all ${previewMode === "translated" ? "bg-indigo-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+                         >
+                            ENG TXT
+                         </button>
+                         <button 
+                             onClick={() => setPreviewMode("tamil")}
+                             className={`px-3 py-1 text-[9px] font-black tracking-widest rounded-lg transition-all ${previewMode === "tamil" ? "bg-indigo-600 text-white shadow-lg" : "text-slate-400 hover:text-white"}`}
+                         >
+                            TAM TXT
+                         </button>
+                      </div>
+
                       {(selectedRow?.sourcePdfUrl || pdfUrl) && (
                          <div className="flex items-center gap-2">
                             {selectedRow && (
@@ -436,13 +477,27 @@ export default function DashboardPage() {
                       )}
                    </div>
 
-                   <div className="flex-1 pt-16 pb-4 px-3">
-                      {selectedRow?.sourcePdfUrl || pdfUrl ? (
-                         <iframe
-                            src={`${selectedRow?.sourcePdfUrl || pdfUrl}#toolbar=0&navpanes=0`}
-                            title="Source Doc"
-                            className="w-full h-full rounded-2xl border-0 bg-slate-800 shadow-2xl"
-                         />
+                   <div className="flex-1 pt-16 pb-4 px-3 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700">
+                      {(selectedRow?.sourcePdfUrl || pdfUrl) ? (
+                         previewMode === "pdf" ? (
+                             <iframe
+                                src={`${selectedRow?.sourcePdfUrl || pdfUrl}#toolbar=0&navpanes=0`}
+                                title="Source Doc"
+                                className="w-full h-full rounded-2xl border-0 bg-slate-800 shadow-2xl"
+                             />
+                         ) : previewMode === "translated" ? (
+                            <div className="p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 min-h-full">
+                               <pre className="text-xs text-slate-300 font-mono whitespace-pre-wrap leading-relaxed">
+                                  {selectedRow?.fullText || "Full English translation not available for this record. Try re-uploading the PDF."}
+                               </pre>
+                            </div>
+                         ) : (
+                            <div className="p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 min-h-full">
+                               <pre className="text-xs text-slate-400 font-tamil whitespace-pre-wrap leading-relaxed">
+                                  {selectedRow?.fullTextTamil || "Original source text not available."}
+                               </pre>
+                            </div>
+                         )
                       ) : (
                          <div className="h-full flex flex-col items-center justify-center text-center">
                             <div className="w-20 h-20 bg-white/5 rounded-[2.5rem] border border-white/10 flex items-center justify-center mb-6 animate-pulse">

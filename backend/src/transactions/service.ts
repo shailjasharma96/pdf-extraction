@@ -20,27 +20,27 @@ export class TransactionService {
           ...item,
           // Store original Tamil text
           partyNameTamil: item.partyName,
+          buyerNameTamil: item.buyerName,
+          sellerNameTamil: item.sellerName,
           villageTamil: item.village,
           recordedTransactionTamil: item.recordedTransaction,
           propertyTypeTamil: item.propertyType,
           landExtentTamil: item.landExtent,
-          considerationValueTamil: item.considerationValue,
-          marketValueTamil: item.marketValue,
           fullTextTamil: item.fullText,
 
           // Store translated English text
           partyName: await translateTamilText(item.partyName),
+          buyerName: await translateTamilText(item.buyerName),
+          sellerName: await translateTamilText(item.sellerName),
           village: await translateTamilText(item.village),
           recordedTransaction: await translateTamilText(item.recordedTransaction),
           propertyType: await translateTamilText(item.propertyType),
           landExtent: await translateTamilText(item.landExtent),
-          considerationValue: await translateTamilText(item.considerationValue),
-          marketValue: await translateTamilText(item.marketValue),
+          subRegistrarOffice: await translateTamilText(item.subRegistrarOffice),
           fullText: await translateTamilText(item.fullText),
 
           // Meta fields (Dates/Numbers)
           executionDate: item.executionDate,
-          entryCount: item.entryCount,
         }))
       );
       console.log("Processed content (Tamil + English):", dataToInsert);
