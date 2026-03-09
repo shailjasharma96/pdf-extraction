@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+  html,
+  body {
+    @apply antialiased scroll-smooth;
+    background: radial-gradient(circle at top left, #f8fafc, #eff6ff);
+    min-height: 100vh;
+    color: #1e293b;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-premium rounded-premium;
+  }
+
+  .premium-button {
+    @apply relative overflow-hidden px-6 py-3 rounded-[8px] font-black transition-all duration-300 bg-gradient-to-r from-brand-primary to-brand-secondary text-white hover:shadow-lg hover:shadow-brand-primary/25 hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .premium-input {
+    @apply w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-[8px] outline-none transition-all duration-300 focus:bg-white focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 placeholder:text-slate-400 placeholder:text-[13px] font-black;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-brand-primary to-brand-secondary;
+  }
+}
+
+/* Custom utilities */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.font-tamil {
+  font-family: 'Latha', 'Tamil MN', 'FreeSerif', ui-sans-serif, system-ui;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 rounded-full;
+}

@@ -1,0 +1,142 @@
+{
+  "id": "1f339d42-b676-41e9-8473-04fb786470d1",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.transactions": {
+      "name": "transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "document_number": {
+          "name": "document_number",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_year": {
+          "name": "document_year",
+          "type": "varchar(4)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "execution_date": {
+          "name": "execution_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nature": {
+          "name": "nature",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "executants_tamil": {
+          "name": "executants_tamil",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "claimants_tamil": {
+          "name": "claimants_tamil",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "village_tamil": {
+          "name": "village_tamil",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "executants_english": {
+          "name": "executants_english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "claimants_english": {
+          "name": "claimants_english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "village_english": {
+          "name": "village_english",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "consideration_value": {
+          "name": "consideration_value",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "market_value": {
+          "name": "market_value",
+          "type": "numeric(15, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "survey_number": {
+          "name": "survey_number",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "property_extent": {
+          "name": "property_extent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_name": {
+          "name": "owner_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

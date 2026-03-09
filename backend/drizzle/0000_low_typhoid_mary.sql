@@ -1,0 +1,20 @@
+CREATE TABLE "transactions" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"document_number" varchar(255) NOT NULL,
+	"document_year" varchar(4) NOT NULL,
+	"execution_date" date NOT NULL,
+	"nature" text NOT NULL,
+	"executants_tamil" text NOT NULL,
+	"claimants_tamil" text NOT NULL,
+	"village_tamil" text NOT NULL,
+	"executants_english" text,
+	"claimants_english" text,
+	"village_english" text,
+	"consideration_value" numeric(15, 2),
+	"market_value" numeric(15, 2),
+	"survey_number" varchar(100) NOT NULL,
+	"property_extent" text NOT NULL,
+	"owner_name" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);

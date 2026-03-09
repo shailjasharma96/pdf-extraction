@@ -1,0 +1,78 @@
+
+# Dependencies
+
+node_modules/
+**/node_modules/
+
+# Yarn PnP
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+
+# Build outputs
+
+dist/
+build/
+.next/
+out/
+
+# recursive build folders (important for monorepo)
+**/dist/
+**/build/
+**/.next/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+**/coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# recursive env ignore
+**/.env
+**/.env.*
+
+# IDEs & editors
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Misc
+*.pem
